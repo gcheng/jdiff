@@ -3,6 +3,8 @@ package jdiff;
 import java.io.*;
 import java.util.*;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 /**
  * The internal representation of an API. 
  * 
@@ -426,4 +428,258 @@ public class API {
         }
         return sb.toString();
     }
+
+    public void dumpPackagesAtClassLevel(PrintWriter writer) {
+        // TODO Auto-generated method stub
+        Iterator iter = packages_.iterator();
+        while (iter.hasNext()) {
+            dumpPackageAtClassLevel((PackageAPI)(iter.next()), writer);
+        }
+    }
+
+    private void dumpPackageAtClassLevel(PackageAPI packageAPI,
+            PrintWriter writer) {
+        // writer.println("Package Name: " + packageAPI.name_);
+     // Display documentation
+        if (packageAPI.doc_ != null) {
+            // writer.println("\"" + packageAPI.doc_ + "\"");
+        }
+        Iterator iter = packageAPI.classes_.iterator();
+        int index = 1;
+        while (iter.hasNext()) {
+            dumpClass((ClassAPI)(iter.next()), writer, packageAPI.name_);
+            index ++;
+        }
+        
+    }
+
+    private void dumpClass(ClassAPI c, PrintWriter writer, String packageName) {
+
+        if (c.isInterface_)
+            writer.println(packageName + "." + c.name_);
+        else
+            writer.println(packageName + "." + c.name_);
+        if (c.doc_ != null) {
+            writer.println(c.doc_ );
+        }
+         
+    }
+
+    public void dumpPackagesAtMethodLevel(PrintWriter writer) {
+        Iterator iter = packages_.iterator();
+        while (iter.hasNext()) {
+            dumpPackageAtMethodLevel((PackageAPI)(iter.next()), writer);
+        }
+    }
+
+    private void dumpPackageAtMethodLevel(PackageAPI packageAPI,
+            PrintWriter writer) {
+        // TODO Auto-generated method stub
+        if (packageAPI.doc_ != null) {
+            // writer.println("\"" + packageAPI.doc_ + "\"");
+        }
+        Iterator iter = packageAPI.classes_.iterator();
+        int index = 1;
+        while (iter.hasNext()) {
+            writer.println("------------------------------------------------------------------------------------");
+            dumpClassAtMethodLevel((ClassAPI)(iter.next()), writer, packageAPI.name_);
+            index ++;
+        }
+    }
+
+    private void dumpClassAtMethodLevel(ClassAPI classAPI, PrintWriter writer,
+            String packageName) {
+        writer.println("package "+ packageName + ";");
+        if (classAPI.isInterface_)
+            writer.println("public interface " + classAPI.name_);
+        else
+        {
+            writer.print("public ");
+            
+            if (classAPI.modifiers_.isStatic)
+                writer.print("static ");
+            if (classAPI.modifiers_.isFinal)
+                writer.print("final ");
+            
+            if (classAPI.isAbstract_)
+            {
+                writer.println("abstract ");
+            }
+            writer.print("class " + classAPI.name_);
+            if ((classAPI.extends_ != null) && (!classAPI.extends_.isEmpty()) && (!classAPI.extends_.equals("java.lang.Object"))) {
+                writer.print(" extends ");
+                
+                writer.print(classAPI.extends_+" ");
+            }
+            
+            if (classAPI.implements_.size() != 0) {
+                
+                writer.println("implements ");
+                Iterator iter = classAPI.implements_.iterator();
+                int index = 0;
+                while (iter.hasNext()) {
+                    String interfaceImpl = (String)(iter.next());
+                    if (index >0 )
+                    {
+                        writer.print(", ");
+                    }
+                    writer.print(interfaceImpl);
+                    index++;
+                }
+            }
+            writer.println(" {");
+        }
+      
+
+        // Dump ctors
+        Iterator iter = classAPI.ctors_.iterator();
+        while (iter.hasNext()) {
+            dumpCtor((ConstructorAPI)(iter.next()), classAPI.name_, writer);
+        }
+        // Dump methods
+        iter = classAPI.methods_.iterator();
+        while (iter.hasNext()) {
+            dumpMethod((MethodAPI)(iter.next()), writer);
+        }
+        // Dump fields
+        iter = classAPI.fields_.iterator();
+        while (iter.hasNext()) {
+            dumpField((FieldAPI)(iter.next()), writer);
+        }
+        writer.println("}");
+    }
+
+    private void dumpField(FieldAPI f,  PrintWriter writer) {
+        
+    }
+
+    private void dumpMethod(MethodAPI m, PrintWriter writer) {
+        if (m.inheritedFrom_ != null)
+            return;
+        
+        writer.print("    public ");
+
+        if (m.modifiers_.isStatic)
+            writer.print("static ");
+        if (m.modifiers_.isFinal)
+            writer.print("final ");
+        
+        // Dump modifiers specific to a method
+        if (m.isAbstract_)
+            System.out.print(" abstract");
+        if (m.isNative_)
+            System.out.print(" native");
+        if (m.isSynchronized_)
+            System.out.print(" synchronized");
+        
+        if (m.returnType_ != null)
+            writer.print(m.returnType_);
+        else
+            writer.print(" void ");
+        
+        writer.print(" " + m.name_);
+ 
+        writer.print("(");
+        Iterator iter = m.params_.iterator();
+        int index = 0;
+        while (iter.hasNext()) {
+            if (index >0 )
+            {
+                writer.print(", ");
+            }
+            dumpParam((ParamAPI)(iter.next()), writer);
+            index++;
+        }
+        writer.print(")");
+        // Display exceptions
+        if ((m.exceptions_!= null) && (!m.exceptions_.isEmpty()) && (!m.exceptions_.equals("no exceptions")))
+        {
+            writer.print(" throws " + m.exceptions_ + " ");
+        }
+        writer.println(" {}");
+    }
+
+    private void dumpParam(ParamAPI p, PrintWriter writer) {
+        writer.print(p.type_ +" "+ p.name_ );
+    }
+
+    private void dumpCtor(ConstructorAPI c, String className, PrintWriter writer) {
+        writer.print("    public " + c.type_ +" ");
+        
+        if (c.modifiers_.isStatic)
+            writer.print("static ");
+        if (c.modifiers_.isFinal)
+            writer.print("final ");
+        
+        writer.print(className);
+        writer.print("(");
+        
+        writer.print(")");
+        if ((c.exceptions_ != null) && (!c.exceptions_.isEmpty()) && (!c.exceptions_.equals("no exceptions")))
+        {
+            writer.print(" throws " + c.exceptions_ + " ");
+        }
+        
+        writer.println(" {}");
+    }
+
+    public void dumpPackagesAtClassLevelInCsvFormat(PrintWriter writer) {
+        
+        Iterator iter = packages_.iterator();
+        while (iter.hasNext()) {
+            dumpPackageAtClassLevelInCsvFormat((PackageAPI)(iter.next()), writer);
+        }
+
+    }
+
+    private void dumpPackageAtClassLevelInCsvFormat(PackageAPI packageAPI,
+            PrintWriter writer) {
+           writer.println(packageAPI.name_);
+        // Display documentation
+           if (packageAPI.doc_ != null) {
+               // writer.println("\"" + packageAPI.doc_ + "\"");
+           }
+           Iterator iter = packageAPI.classes_.iterator();
+           int index = 1;
+           while (iter.hasNext()) {
+               dumpClassInCsvFormat((ClassAPI)(iter.next()), writer);
+               index ++;
+           }
+    }
+
+    private void dumpClassInCsvFormat(ClassAPI classAPI, PrintWriter writer) {
+        if (classAPI.isInterface_)
+            writer.print(classAPI.name_ );
+        else
+            writer.print(classAPI.name_ );
+        if (classAPI.doc_ != null) {
+            writer.println(", " + StringEscapeUtils.escapeCsv(removeNewLine(classAPI.doc_)) );
+        }else 
+        {
+            writer.println();
+        }
+    }
+    
+    private String removeNewLine(String sourceString)
+    {
+        String resultString = sourceString.replace("\n", " ").replace("\r", " ");
+        return resultString;
+    }
+
+    public void dumpPackagesAtClassLevelBrief(PrintWriter writer) {
+        Iterator iter = packages_.iterator();
+        while (iter.hasNext()) {
+            dumpPackageAtClassLevelBrief((PackageAPI)(iter.next()), writer);
+        }
+    }
+
+    private void dumpPackageAtClassLevelBrief(PackageAPI packageAPI,
+            PrintWriter writer) {
+        Iterator iter = packageAPI.classes_.iterator();
+        int index = 1;
+        while (iter.hasNext()) {
+            writer.println(packageAPI.name_ + ((ClassAPI)(iter.next())).name_);
+        }
+    }
+
 }

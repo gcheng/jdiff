@@ -17,6 +17,14 @@ public class HTMLFiles {
         h_ = h;
     }   
 
+    public HTMLFiles() {
+        // TODO Auto-generated constructor stub
+    }
+
+    public HTMLFiles(JSRReportGenerator sectionSixReportGenerator) {
+        // TODO Auto-generated constructor stub
+    }
+
     /** The HTMLReportGenerator instance used to write HTML. */
     private HTMLReportGenerator h_ = null;
 

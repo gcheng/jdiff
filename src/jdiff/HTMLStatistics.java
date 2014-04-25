@@ -17,6 +17,10 @@ public class HTMLStatistics {
         h_ = h;
     }   
 
+    public HTMLStatistics(JSRReportGenerator sectionSixReportGenerator) {
+        // TODO Auto-generated constructor stub
+    }
+
     /** The HTMLReportGenerator instance used to write HTML. */
     private HTMLReportGenerator h_ = null;
 

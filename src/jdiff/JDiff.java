@@ -124,6 +124,11 @@ public class JDiff extends Doclet {
             // now commented out.
             System.out.println("JDiff: writing the comments out to file '" + commentsFileName + "'...");
             Comments.writeFile(commentsFileName, newComments);
+            // Generate an SectionSex report 
+            JSRReportGenerator.outputDir = HTMLReportGenerator.outputDir;
+            JSRReportGenerator sectionSixReportGenerator = new JSRReportGenerator(); 
+            sectionSixReportGenerator.generate(comp, existingComments);
+            
         }
 
         System.out.print("JDiff: finished (took " + (System.currentTimeMillis() - startTime)/1000 + "s");

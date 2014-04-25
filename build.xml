@@ -42,6 +42,7 @@ The JDiff Ant build file.
 
   <path id="class.path">
     <pathelement location="${basedir}/lib/xerces.jar" />
+    <pathelement location="${basedir}/lib/commons-lang3-3.3.2.jar" />
   </path>
   
   <property name="debug" value="true" />
@@ -111,6 +112,7 @@ The JDiff Ant build file.
   <copy file="${lib.dir}/antjdiff.jar" todir="${dist.dir}" />
   <copy file="${basedir}/lib/Null.java" todir="${dist.dir}" />
   <copy file="${basedir}/lib/xerces.jar" todir="${dist.dir}" />
+  <copy file="${basedir}/lib/commons-lang3-3.3.2.jar" todir="${dist.dir}" />
   <copy file="${basedir}/lib/background.gif" todir="${dist.dir}" />
   <copy file="${basedir}/lib/black.gif" todir="${dist.dir}" />
   <!-- Files below here are not necessary for reports -->
@@ -160,7 +162,7 @@ The JDiff Ant build file.
     sourcepath="${test.dir}/old"
     packagenames="RemovedPackage,ChangedPackage,ChangedPackageDoc,ChangedPackageDoc2,ChangedPackageGenerics,NoPackage,NoPackageRemoved">
     <doclet name="jdiff.JDiff"
-      path="${dist.dir}/jdiff.jar:${dist.dir}/xerces.jar">
+      path="${dist.dir}/jdiff.jar:${dist.dir}/xerces.jar:${dist.dir}/commons-lang3-3.3.2.jar">
       <param name="-apidir" value="${xml.dir}" />
       <param name="-excludeclass" value="private" />
       <param name="-excludemember" value="private" />
@@ -180,7 +182,7 @@ The JDiff Ant build file.
     sourcepath="${test.dir}/new"
     packagenames="AddedPackage,ChangedPackage,ChangedPackageDoc,ChangedPackageDoc2,ChangedPackageGenerics,NoPackage,NoPackageAdded">
     <doclet name="jdiff.JDiff"
-      path="${dist.dir}/jdiff.jar:${dist.dir}/xerces.jar">
+      path="${dist.dir}/jdiff.jar:${dist.dir}/xerces.jar:${dist.dir}/commons-lang3-3.3.2.jar">
       <param name="-apidir" value="${xml.dir}" />
       <param name="-excludeclass" value="private" />
       <param name="-excludemember" value="private" />
@@ -205,7 +207,7 @@ The JDiff Ant build file.
     destdir="${build.dir}/reports/fine_control"
     sourcefiles="${dist.dir}/Null.java">
     <doclet name="jdiff.JDiff"
-      path="${dist.dir}/jdiff.jar:${dist.dir}/xerces.jar">
+      path="${dist.dir}/jdiff.jar:${dist.dir}/xerces.jar:${dist.dir}/commons-lang3-3.3.2.jar">
       <param name="-oldapi" value="Old Test API" />
       <param name="-newapi" value="New Test API" />
       <param name="-oldapidir" value="${xml.dir}" />

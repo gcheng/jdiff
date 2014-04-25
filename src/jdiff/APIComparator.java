@@ -34,6 +34,16 @@ public class APIComparator {
     /** For easy local access to the new API object. */
     private static API newAPI_;
 
+    public static API getNewAPI()
+    {
+        return newAPI_;
+    }
+    
+    public static API getOldAPI()
+    {
+        return oldAPI_;
+    }
+    
     /** 
      * Compare two APIs. 
      */
