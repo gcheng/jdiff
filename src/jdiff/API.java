@@ -179,7 +179,7 @@ public class API {
      */
     public static void dumpCtor(ConstructorAPI c, int indent) {
         for (int i = 0; i < indent; i++) System.out.print(" ");
-        System.out.println("Ctor type: " + c.type_);
+        System.out.println("Ctor type: " + getShortName(c.type_));
         // Display exceptions 
         System.out.print("exceptions: " + c.exceptions_ + " ");
         // Dump modifiers common to all
@@ -491,7 +491,7 @@ public class API {
             String packageName) {
         writer.println("package "+ packageName + ";");
         if (classAPI.isInterface_)
-            writer.println("public interface " + classAPI.name_);
+            writer.println("public interface " + classAPI.name_ + "{");
         else
         {
             writer.print("public ");
@@ -514,7 +514,7 @@ public class API {
             
             if (classAPI.implements_.size() != 0) {
                 
-                writer.println("implements ");
+                writer.println(" implements ");
                 Iterator iter = classAPI.implements_.iterator();
                 int index = 0;
                 while (iter.hasNext()) {
@@ -573,7 +573,7 @@ public class API {
             System.out.print(" synchronized");
         
         if (m.returnType_ != null)
-            writer.print(m.returnType_);
+            writer.print(getShortName(m.returnType_));
         else
             writer.print(" void ");
         
@@ -592,19 +592,34 @@ public class API {
         }
         writer.print(")");
         // Display exceptions
-        if ((m.exceptions_!= null) && (!m.exceptions_.isEmpty()) && (!m.exceptions_.equals("no exceptions")))
-        {
-            writer.print(" throws " + m.exceptions_ + " ");
-        }
+        // if ((m.exceptions_!= null) && (!m.exceptions_.isEmpty()) && (!m.exceptions_.equals("no exceptions")))
+        //{
+        //    writer.print(" throws " + m.exceptions_ + " ");
+        //}
         writer.println(" {}");
     }
 
     private void dumpParam(ParamAPI p, PrintWriter writer) {
-        writer.print(p.type_ +" "+ p.name_ );
+        writer.print(getShortName(p.type_) +" "+ p.name_ );
+    }
+
+    private static String getShortName(String fullyQualifiedName) {
+        String shortName = fullyQualifiedName;
+        for (int i=fullyQualifiedName.length()-1;i>=0; i--)
+        {
+            String c = fullyQualifiedName.substring(i,i+1);
+            if (c.equals("."))
+            {
+                shortName = fullyQualifiedName.substring(i+1, fullyQualifiedName.length());
+                break;
+            }
+        }
+        System.out.println(String.format("%s is shortened to %s", fullyQualifiedName, shortName));
+        return shortName;
     }
 
     private void dumpCtor(ConstructorAPI c, String className, PrintWriter writer) {
-        writer.print("    public " + c.type_ +" ");
+        writer.print("    public " + getShortName(c.type_) +" ");
         
         if (c.modifiers_.isStatic)
             writer.print("static ");
@@ -613,7 +628,6 @@ public class API {
         
         writer.print(className);
         writer.print("(");
-        
         writer.print(")");
         if ((c.exceptions_ != null) && (!c.exceptions_.isEmpty()) && (!c.exceptions_.equals("no exceptions")))
         {
